@@ -1,4 +1,4 @@
-g/*
+/*
   GPS speedometer.
   (c) 10th August 2017 A.G.Doswell  Web Page http://andydoz.blogspot.co.uk
 
@@ -44,7 +44,7 @@ const int maxStep = 784;
 unsigned int delayCounter = 0 ;
 int oldSpeed;
 int acceleration;
-const int delayMax = 65535;
+unsigned int delayMax = 65535;
 
 void setup()   {
   pinMode(8, OUTPUT); // output to power supply over-ride, high gets power from Permanent 12V
