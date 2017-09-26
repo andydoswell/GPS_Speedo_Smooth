@@ -44,7 +44,7 @@ const int maxStep = 784;
 unsigned int delayCounter = 0 ;
 int oldSpeed;
 int acceleration;
-unsigned int delayMax = 65535;
+unsigned int delayMax = 100;
 
 void setup()   {
   pinMode(8, OUTPUT); // output to power supply over-ride, high gets power from Permanent 12V
@@ -149,7 +149,7 @@ void loop() {
   delayCounter --;
   if (delayCounter <= 0 ) {
     updateMotor ();
-    delayCounter = map(acceleration, 0, 30, delayMax, 0);
+    delayCounter = map(acceleration, 0, 10, delayMax, 0);
   }
   checkPower ();
 }
