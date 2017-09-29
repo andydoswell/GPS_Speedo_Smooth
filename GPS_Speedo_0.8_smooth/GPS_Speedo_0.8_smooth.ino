@@ -138,8 +138,8 @@ void setup()   {
 
 void loop() {
 
-  while (Serial.available()) {//While GPS message received,
-    if (gps.encode(Serial.read())); // if the GPS messaged received is ready
+  while (Serial.available() > 0) { //While GPS message received,
+    gps.encode(Serial.read()); // if the GPS messaged received is ready
     {
       processGPS ();
       break;
@@ -166,7 +166,7 @@ void checkPower () {
 }
 
 void processGPS () {
-  if (gps.location.isUpdated()) {
+  if (gps.location.isValid() ) {
     MPH = gps.speed.mph();
     if (!fixFlag) {
       oldLat = gps.location.lat();
@@ -185,7 +185,7 @@ void processGPS () {
       acceleration = MPH - oldSpeed;
       acceleration = abs(acceleration);
       oldSpeed = MPH;
-      delayCounter = map(acceleration, 0, 30, delayMax, 0);
+      delayCounter = map(acceleration, 0, 5, delayMax, 0);
 
     }
     if (distanceMeters >= 1609.34) { // 1609.34m in a mile
