@@ -149,19 +149,19 @@ void loop() {
     }
   }
 
-  if (MPH >= 3) {
+  if (MPH >= 3) { // if speed is more than 3 MPH, set the target position on the motor
     motorPosition = map (MPH, 0 , maxSpeed , 1, maxStep);
     motor1.setPosition(motorPosition);
   }
-  else {
+  else { // if the speed is ess than 3 MPH, go straight to zero. 
     motorPosition = 1; // don't go quite to zero... prevents potential issue damaging the motor.
     motor1.setPosition(motorPosition);
     motor1.updateBlocking ();
-    currentMotorPosition = motorPosition;
+    currentMotorPosition = motorPosition; // reset target vs. current position.
 
   }
 
-  if (delayCounter <= 0) {
+  if (delayCounter <= 0) { // if delay counter is 0, update the motor position.
     updateMotor ();
   }
   delayCounter --;
@@ -182,7 +182,7 @@ void checkPower () {
 void processGPS () {
   if (gps.location.isValid ()) {
     MPH = gps.speed.mph();
-    if (!fixFlag) {
+    if (!fixFlag) { // if this is the first time we've had a fix, the update the position
       oldLat = gps.location.lat();
       oldLong = gps.location.lng();
       getMileage (); // re-read the EEPROM, just in case it was corrupted during cranking.
@@ -190,18 +190,18 @@ void processGPS () {
 
     }
     else {
-      if (MPH >= 3) {
-        currentDistance = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), oldLat, oldLong);
+      if (MPH >= 3) { // MPH must be greater than 3 to update the odometer, this prevents jitter adding to the odo.
+        currentDistance = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), oldLat, oldLong); // distance between current position and the last pposition 
         distanceMeters += currentDistance;
-        oldLat = gps.location.lat();
+        oldLat = gps.location.lat(); // set last position to current position
         oldLong = gps.location.lng();
       }
 
     }
     if (distanceMeters >= 1609.34) { // 1609.34m in a mile
-      distanceMeters -= 1609.34;
-      if (distanceMeters < 10) { // this prevents a rare error which screws the mileage.
-        incrementMileage ();
+      distanceMeters -= 1609.34; // subtract a mile
+      if (distanceMeters < 10) { // this prevents a rare error which screws the mileage. (the error is the distance reported being from 0 deg lat, 0 deg long, which is fine if you're just off the coast of Africa...GPS still reports position valid, even though it isn't!))
+        incrementMileage (); // add a mile to the odo.
       }
     }
   }
@@ -289,14 +289,11 @@ void updateMotor () {
   if (currentMotorPosition > motorPosition) {
     currentMotorPosition --;
   }
-  motorDifference = motorPosition - currentMotorPosition;
+  motorDifference = motorPosition - currentMotorPosition; // calculates the difference between the current and target position, and modifies the delay to suit.
   motorDifference = abs(motorDifference);
   if (motorDifference > 40) {
     delayCounter = 0;
   }
- /* if (motorDifference <= 50) {
-    delayCounter = 100;
-  }*/
   if (motorDifference <= 40) {
     delayCounter = 40;
   }
